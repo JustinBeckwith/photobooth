@@ -21,6 +21,8 @@ nconf.argv().env().file({
     file: 'secrets.json'
 });
 
+const bucket = storage.bucket('photobooth-next');
+
 // configure express
 const app = express();
 const upload = multer();
@@ -83,8 +85,30 @@ app.post('/sendpic', upload.array(), (req, res, next) => {
           }
           console.log(stderr);
           console.log(stdout);
+
+          bucket.upload(cardPath, (err, file) => {
+            if (err) {
+              console.error(err);
+              return next(err);
+            }
+            let expiration = new Date();
+            expiration.setDate(expiration.getDate() + 1);
+            let config = {
+              action: 'read',
+              expires: expiration
+            }
+            file.getSignedUrl(config, (err, url) => {
+              if (err) {
+                console.error(err);
+                return next(err);
+              }
+              res.json({
+                url: url
+              });
+          });
         });
       });
+    });
 
     console.log(`Thumb path: ${thumbPath}`);
     console.log(`Card path: ${cardPath}`);
@@ -132,9 +156,3 @@ const server = app.listen(process.env.PORT || 8080, '0.0.0.0', () => {
 
 // gm convert meinahat.jpg -resize 368x368^ -gravity Center -crop 368x368+0+0 +repage thumb.png 
 // gm convert -size 1024x580 xc:transparent -page +595+106 thumb.png -page +0+0 twittercard.png -flatten result.png
-
-
-
-
-
-

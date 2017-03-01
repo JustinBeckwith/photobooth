@@ -63,22 +63,9 @@ function takepicture() {
     body: form
   }).then((response) => {
     return response.json();
-  }).then((faces) => {
-    console.log(faces);
-    ctx.beginPath();
-    ctx.strokeStyle = "#80ff80";
-    ctx.fillStyle = "#80ff80";
-    for (var face of faces) {
-      console.log('drawing face');
-      var startPoint = face.bounds.face[face.bounds.face.length-1];
-      ctx.moveTo(startPoint.x, startPoint.y);
-      for (var point of face.bounds.face) {
-        ctx.fillRect(point.x-3, point.y-3, 7, 7);
-        ctx.lineTo(point.x, point.y);
-      };
-      ctx.stroke();
-    }
-    ctx.closePath();
+  }).then((result) => {
+    console.log(result);
+    window.location.href = result.url;
   }).catch((err) => {
     console.error('There was a problem :(');
     console.error(err);
