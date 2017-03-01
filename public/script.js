@@ -65,7 +65,7 @@ function takepicture() {
     return response.json();
   }).then((result) => {
     console.log(result);
-    window.location.href = result.url;
+    window.location.href = '/next?url=' + encodeURIComponent(result.url);
   }).catch((err) => {
     console.error('There was a problem :(');
     console.error(err);

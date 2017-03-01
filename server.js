@@ -7,6 +7,7 @@ const PubNub = require('pubnub');
 const multer  = require('multer');
 const uuid = require('uuid');
 const fs = require('fs');
+const yes = require('yes-https');
 const gm = require('gm');
 const child_process = require('child_process');
 const cloudSettings = {
@@ -25,6 +26,7 @@ const bucket = storage.bucket('photobooth-next');
 
 // configure express
 const app = express();
+app.use(yes());
 const upload = multer();
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', swig.renderFile);
@@ -52,6 +54,12 @@ app.get('/dashboard', (req, res, next) => {
     });
 });
 
+app.get('/next', (req, res, next) => {
+
+  res.render('next', { 
+    url: req.query.url
+  });
+});
 
 
 // find objects in the picture with the cloud vision API
@@ -91,19 +99,13 @@ app.post('/sendpic', upload.array(), (req, res, next) => {
               console.error(err);
               return next(err);
             }
-            let expiration = new Date();
-            expiration.setDate(expiration.getDate() + 1);
-            let config = {
-              action: 'read',
-              expires: expiration
-            }
-            file.getSignedUrl(config, (err, url) => {
+            file.makePublic((err, data) => {
               if (err) {
                 console.error(err);
                 return next(err);
               }
               res.json({
-                url: url
+                url: file.metadata.mediaLink
               });
           });
         });

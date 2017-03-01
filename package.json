@@ -14,7 +14,8 @@
     "pubnub": "^4.4.4",
     "serve-favicon": "^2.4.0",
     "swig": "^1.4.2",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "yes-https": "^0.0.3"
   },
   "devDependencies": {},
   "scripts": {
